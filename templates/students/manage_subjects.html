@@ -1,0 +1,62 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Manage Subjects</h1>
+            <p class="text-muted mb-0">Add and assign subjects for teachers.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="records-card p-4 mb-4 shadow-sm rounded-4">
+                <h5 class="mb-3">{{ form_title|default:'Add New Subject' }}</h5>
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">{{ submit_text|default:'Add Subject' }}</button>
+                    {% if edit_subject_id %}
+                        <a href="{% url 'manage_subjects' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="records-table-card p-4 shadow-sm rounded-4">
+                <h5 class="mb-3">Existing Subjects</h5>
+                <div class="list-group">
+                    {% for subject in subjects %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ subject.name }}</strong>
+                                {% if subject.description %}
+                                    <div class="text-muted">{{ subject.description }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'edit_subject' subject.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form method="post" action="{% url 'delete_subject' subject.id %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this subject?');">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No subjects found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Mark Attendance</h1>
+            <p class="text-muted mb-0">Record daily presence and absence for students.</p>
+        </div>
+        <button type="submit" form="attendance-form" class="btn btn-primary btn-lg">Save Register</button>
+    </div>
+
+    
+    <div class="records-table-card p-4 mb-4 shadow-sm rounded-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <div class="input-group">
+                    <span class="input-group-text">📅</span>
+                    <input type="text" readonly class="form-control" value="{{ today|date:'d/m/Y' }}">
+                </div>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-success fs-6">{{ present_count }} Present</span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-danger fs-6">{{ absent_count }} Absent</span>
+            </div>
+            <div class="col-md-5 ms-auto">
+                <input id="attendance-search" type="search" class="form-control" placeholder="Search students...">
+            </div>
+            <div class="col-auto">
+                <button type="button" id="mark-all-present" class="btn btn-outline-primary">Mark All Present</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="mark-all-absent" class="btn btn-outline-secondary">Mark All Absent</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-table-card p-4 shadow-sm rounded-4">
+        <form id="attendance-form" method="POST">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col">Roll No.</th>
+                            <th scope="col">Student Name</th>
+                            <th scope="col">Course</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body">
+                        {% for row in student_rows %}
+                        <tr class="student-row">
+                            <td class="align-middle text-secondary">{{ row.student.roll_number }}</td>
+                            <td class="align-middle fw-semibold">{{ row.student.name }}</td>
+                            <td class="align-middle">{{ row.student.course }}</td>
+                            <td class="align-middle">
+                                <select name="{{ row.student.id }}" class="form-select attendance-status">
+                                    <option value="Present" {% if row.status == 'Present' %}selected{% endif %}>Present</option>
+                                    <option value="Absent" {% if row.status == 'Absent' %}selected{% endif %}>Absent</option>
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function() {
+    const searchInput = document.getElementById('attendance-search');
+    const rows = document.querySelectorAll('#student-table-body .student-row');
+    const presentButton = document.getElementById('mark-all-present');
+    const absentButton = document.getElementById('mark-all-absent');
+    const selects = document.querySelectorAll('.attendance-status');
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+
+    presentButton.addEventListener('click', function() {
+        selects.forEach(select => select.value = 'Present');
+    });
+
+    absentButton.addEventListener('click', function() {
+        selects.forEach(select => select.value = 'Absent');
+    });
+})();
+</script>
+{% endblock %}

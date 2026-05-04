@@ -1,0 +1,136 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Dashboard Overview</h1>
+            <p class="text-muted mb-0">Daily statistics and attendance metrics.</p>
+        </div>
+    </div>
+
+    <div class="records-table-card p-4 shadow-sm rounded-4" style="height:600px;">    
+    <div class="row g-4">
+        <div class="col-xl-3 col-md-6">
+            {% comment %} <div class="card card-metric p-4"> {% endcomment %}
+            <div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="metric-label">Total Students</div>
+                        <h2 class="mb-0">{{ total }}</h2>
+                    </div>
+                    <div class="icon bg-primary">
+                        <span class="fs-5">👥</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            {% comment %} <div class="card card-metric p-4"> {% endcomment %}
+<div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="metric-label">Present Today</div>
+                        <h2 class="mb-0">{{ present }}</h2>
+                    </div>
+                    <div class="icon bg-success">
+                        <span class="fs-5">✔️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            {% comment %} <div class="card card-metric p-4"> {% endcomment %}
+<div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="metric-label">Absent Today</div>
+                        <h2 class="mb-0">{{ absent }}</h2>
+                    </div>
+                    <div class="icon bg-danger">
+                        <span class="fs-5">✖️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            {% comment %} <div class="card card-metric p-4"> {% endcomment %}
+<div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="metric-label">Overall Rate</div>
+                        <h2 class="mb-0">{{ attendance_rate }}%</h2>
+                    </div>
+                    <div class="icon bg-purple" style="background: #8a63e8;">
+                        <span class="fs-5">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-xl-6">
+            {% comment %} <div class="card recent-card p-4"> {% endcomment %}
+                <div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="mb-0">Recent Attendance Dates</h5>
+                        <div class="text-muted">Latest attendance sessions logged in the system.</div>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% if recent_dates %}
+                        {% for date in recent_dates %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-0">
+                            <div>
+                                <div class="fw-semibold">{{ date|date:"l, F j, Y" }}</div>
+                            </div>
+                            <span class="badge bg-light text-dark status-badge">Logged</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted py-3">No attendance records yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            {% comment %} <div class="card info-card p-4"> {% endcomment %}
+<div class="records-table-card p-4 shadow-sm rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="mb-0">System Info</h5>
+                        <div class="text-muted">A quick overview of attendance activity.</div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded-4 shadow-sm">
+                            <div class="text-muted small">Total Attendance Days</div>
+                            <div class="fs-4 fw-semibold">{{ attendance_days }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded-4 shadow-sm">
+                            <div class="text-muted small">Term Status</div>
+                            <span class="badge bg-success mt-2">Active</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 bg-white rounded-4 shadow-sm">
+                            <div class="text-muted small">Marked Today</div>
+                            <div class="fs-4 fw-semibold">{{ marked_today }} / {{ total }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

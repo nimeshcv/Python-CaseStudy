@@ -1,0 +1,62 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Manage Courses</h1>
+            <p class="text-muted mb-0">Add and manage courses.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="records-card p-4 mb-4 shadow-sm rounded-4">
+                <h5 class="mb-3">{{ form_title|default:'Add New Course' }}</h5>
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">{{ submit_text|default:'Add Course' }}</button>
+                    {% if edit_course_id %}
+                        <a href="{% url 'manage_courses' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="records-table-card p-4 shadow-sm rounded-4">
+                <h5 class="mb-3">Existing Courses</h5>
+                <div class="list-group">
+                    {% for course in courses %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ course.name }}</strong>
+                                {% if course.description %}
+                                    <br><small class="text-muted">{{ course.description }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form method="post" action="{% url 'delete_course' course.id %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this course?');">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No courses yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

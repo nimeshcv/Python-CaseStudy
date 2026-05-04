@@ -1,0 +1,76 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid px-0">
+    <div class="mb-4">
+        <h1 class="page-title">Attendance Records</h1>
+        <p class="page-subtitle">Review historical attendance logs by date.</p>
+    </div>
+
+    <div class="records-card p-4 mb-4">
+        <form method="get" class="row gx-3 gy-3 align-items-end">
+            <div class="col-lg-4 col-md-6">
+                <label for="date" class="form-label">Select Date</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">📅</span>
+                    <input type="date" id="date" name="date" class="form-control border-start-0" value="{{ selected_date|date:'Y-m-d' }}">
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-lg">View</button>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex flex-wrap gap-3 justify-content-end">
+                    <div class="summary-pill bg-success bg-opacity-10">
+                        <div class="label">Present</div>
+                        <h4 class="text-success">{{ present_count }}</h4>
+                    </div>
+                    <div class="summary-pill bg-danger bg-opacity-10">
+                        <div class="label">Absent</div>
+                        <h4 class="text-danger">{{ absent_count }}</h4>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="records-table-card p-4 shadow-sm rounded-4">
+        {% if records %}
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Roll No.</th>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.student.roll_number }}</td>
+                        <td class="fw-semibold">{{ record.student.name }}</td>
+                        <td>{{ record.student.course }}</td>
+                        <td>
+                            {% if record.status == "Present" %}
+                            <span class="status-pill status-present">Present</span>
+                            {% else %}
+                            <span class="status-pill status-absent">Absent</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <p class="mb-0 text-muted">No attendance records found for {{ selected_date|date:'F j, Y' }}.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

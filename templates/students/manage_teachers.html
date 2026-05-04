@@ -1,0 +1,58 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Manage Teachers</h1>
+            <p class="text-muted mb-0">Create and update teacher assignments.</p>
+        </div>
+        <a href="{% url 'add_teacher' %}" class="btn btn-primary btn-lg">+ Add Teacher</a>
+    </div>
+
+    <div class="records-table-card p-4 shadow-sm rounded-4">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Assigned Course</th>
+                        <th scope="col">Subjects</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if teachers %}
+                        {% for teacher in teachers %}
+                            <tr>
+                                <td>{{ teacher.username }}</td>
+                                <td>{{ teacher.email }}</td>
+                                <td>{{ teacher.profile.assigned_course }}</td>
+                                <td>
+                                    {% for subject in teacher.profile.subjects.all %}
+                                        <span class="badge bg-secondary me-1">{{ subject.name }}</span>
+                                    {% empty %}
+                                        <span class="text-muted">None</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'edit_teacher' teacher.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form method="post" action="{% url 'delete_teacher' teacher.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this teacher?');">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No teachers found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

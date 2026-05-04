@@ -1,0 +1,32 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4 gap-3">
+        <div>
+            <h1 class="page-title">{{ page_title }}</h1>
+            <p class="page-subtitle">Set teacher details, course assignment, and subjects.</p>
+        </div>
+    </div>
+
+    <div class="card card-compact p-4 shadow-soft">
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary">{{ submit_text }}</button>
+                <a href="{% url 'manage_teachers' %}" class="btn btn-outline-secondary">Back to Teachers</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
