@@ -13,11 +13,17 @@ from .models import Attendance, Course, Student, Subject, UserProfile
 
 
 def is_admin(user):
-    return hasattr(user, 'profile') and user.profile.role == 'admin'
+    if user.is_superuser:
+        return True
+    profile = getattr(user, 'profile', None)
+    return getattr(profile, 'role', None) == 'admin'
 
 
 def is_teacher_or_admin(user):
-    return hasattr(user, 'profile') and user.profile.role in ['teacher', 'admin']
+    if user.is_superuser:
+        return True
+    profile = getattr(user, 'profile', None)
+    return getattr(profile, 'role', None) in ['teacher', 'admin']
 
 
 def login_view(request):

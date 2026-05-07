@@ -169,13 +169,13 @@
                     <span class="nav-icon">⌂</span>
                     Dashboard
                 </a>
-                {% if user.profile.role != 'admin' %}
+                {% if user_role != 'admin' %}
                 <a href="{% url 'students' %}" class="nav-link {% if request.resolver_match.url_name == 'students' %}active{% endif %}">
                     <span class="nav-icon">👥</span>
                     Students
                 </a>
                 {% endif %}
-                {% if user.profile.role == 'admin' %}
+                {% if user_role == 'admin' %}
                 <a href="{% url 'manage_courses' %}" class="nav-link {% if request.resolver_match.url_name == 'manage_courses' %}active{% endif %}">
                     <span class="nav-icon">📚</span>
                     Courses
@@ -189,7 +189,7 @@
                     Teachers
                 </a>
                 {% endif %}
-                {% if user.profile.role == 'teacher' %}
+                {% if user_role == 'teacher' %}
                 <a href="{% url 'attendance' %}" class="nav-link {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
                     <span class="nav-icon">🗓️</span>
                     Mark Attendance
