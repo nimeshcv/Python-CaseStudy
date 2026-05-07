@@ -1,2 +1,5 @@
-Django>=5.0
-gunicorn
+Django>=5.2,<6.0
+dj-database-url>=2.2
+gunicorn>=22.0
+psycopg[binary]>=3.2
+whitenoise[brotli]>=6.7
