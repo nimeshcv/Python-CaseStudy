@@ -8,6 +8,11 @@ try:
 except ImportError:
     dj_database_url = None
 
+try:
+    import whitenoise
+except ImportError:
+    whitenoise = None
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,14 +21,20 @@ def env_bool(name, default=False):
     value = os.environ.get(name)
     if value is None:
         return default
-    return value.lower() in ("1", "true", "yes", "on")
+    normalized = value.lower()
+    if normalized in ("1", "true", "yes", "on"):
+        return True
+    if normalized in ("0", "false", "no", "off"):
+        return False
+    return default
 
 
-DEBUG = env_bool("DEBUG", default=False)
+ON_RENDER = bool(os.environ.get("RENDER"))
+DEBUG = env_bool("DEBUG", default=not ON_RENDER)
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
-    if DEBUG:
+    if not ON_RENDER:
         SECRET_KEY = "django-insecure-local-development-key"
     else:
         raise ImproperlyConfigured("Set the SECRET_KEY environment variable.")
@@ -32,7 +43,7 @@ allowed_hosts = os.environ.get("ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts.split(",") if host.strip()]
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
-if DEBUG:
+if DEBUG or not ON_RENDER:
     ALLOWED_HOSTS.extend(["127.0.0.1", "localhost"])
 
 csrf_trusted_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
@@ -59,7 +70,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -67,6 +77,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+if whitenoise is not None:
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+elif ON_RENDER:
+    raise ImproperlyConfigured("WhiteNoise is required on Render. Run pip install -r requirements.txt.")
 
 ROOT_URLCONF = "AttendanceSystem.urls"
 
@@ -134,7 +148,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+if whitenoise is not None:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
