@@ -2,8 +2,9 @@ services:
   - type: web
     name: attendance-system
     runtime: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
-    startCommand: python manage.py migrate && gunicorn AttendanceSystem.wsgi:application
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: python manage.py migrate --noinput && gunicorn AttendanceSystem.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
         generateValue: true

@@ -43,6 +43,8 @@ allowed_hosts = os.environ.get("ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts.split(",") if host.strip()]
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
+if ON_RENDER:
+    ALLOWED_HOSTS.append(".onrender.com")
 if DEBUG or not ON_RENDER:
     ALLOWED_HOSTS.extend(["127.0.0.1", "localhost"])
 
@@ -56,6 +58,8 @@ if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     CSRF_TRUSTED_ORIGINS.append(
         f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}"
     )
+if ON_RENDER:
+    CSRF_TRUSTED_ORIGINS.append("https://*.onrender.com")
 
 
 INSTALLED_APPS = [
@@ -79,8 +83,6 @@ MIDDLEWARE = [
 ]
 if whitenoise is not None:
     MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-elif ON_RENDER:
-    raise ImproperlyConfigured("WhiteNoise is required on Render. Run pip install -r requirements.txt.")
 
 ROOT_URLCONF = "AttendanceSystem.urls"
 
@@ -149,7 +151,14 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 if whitenoise is not None:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
